@@ -36,7 +36,7 @@ export const Code = () => {
 
   const highlight = (code) => (
     <Highlight {...defaultProps} theme={theme} code={code} language="jsx">
-      {({ className, tokens, getLineProps, getTokenProps }) => (
+      {({ tokens, getLineProps, getTokenProps }) => (
         <Fragment>
           {tokens.map((line, i) => (
             <div {...getLineProps({ line, key: i })}>
