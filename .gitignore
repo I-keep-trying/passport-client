@@ -1,0 +1,5 @@
+/node_modules
+.vscode
+.env*
+src/App1.js
+src/App2.js
