@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const url = '/'
+const url = '/api'
 
 export const ping = () => {
-  const request = axios.get(url)
+  const request = axios.get('/')
   return request.then((response) => {
     return response
   })
@@ -60,7 +60,7 @@ export const resetPw = async (params) => {
 }
 
 export const editUser = async (params) => {
-//  console.log('editUser params',params)
+  //  console.log('editUser params',params)
   try {
     const res = await axios.post(`${url}/edit`, params)
     return res.data
