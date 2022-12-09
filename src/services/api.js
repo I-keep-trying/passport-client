@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const url = '/api'
+const url = '/'
 
 export const ping = () => {
   const request = axios.get(url)
