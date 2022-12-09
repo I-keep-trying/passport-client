@@ -18,11 +18,11 @@ const app = express()
 
 app.use(cors())
 
-app.use(
+/* app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'same-site' },
   })
-)
+) */
 
 app.disable('x-powered-by')
 app.use(bodyParser.urlencoded({ extended: false }))
