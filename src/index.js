@@ -2,10 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthContext } from './context/auth-context'
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
-import App from './App2'
-import {Code} from './components/Code'
+import App from './App'
+import Basic from './components/Basic'
 import theme from './theme'
-console.log('theme', theme)
+//console.log('theme', theme)
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 

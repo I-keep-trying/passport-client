@@ -12,9 +12,7 @@ import {
   getForgot,
   ping,
   contactForm,
-  getEmailValidate,
 } from '../services/api'
-import avatarImg from '../assets/avatar1.svg'
 
 export const authContext = React.createContext({})
 
@@ -67,42 +65,24 @@ export const AuthContext = (props) => {
   const handleRegister = async (params) => {
     try {
       setLoading(true)
-      const emailParam = params.email
-      const isValid = await getEmailValidate(params.email)   
-      if (isValid.did_you_mean.length > 0) {
-        setLoading(false)
-        setEmailErr({
-          param: emailParam,
-          validationError: isValid.did_you_mean,
-        })
-        return { param: emailParam, validationError: isValid.did_you_mean }
-      } else if (!isValid.smtp_check) {
-        setLoading(false)
-        setMessage({
-          type: 'error',
-          text: 'Please check email address, is it correct?',
-        })
-        return
-      } else {
-        const res = await register(params)
-        setLoading(false)
-        if (res.error) {
-          setMessage({ type: 'error', text: res.message })
-          return res.error
-        }
-        setUser({
-          name: params.name,
-          email: params.email,
-          avatar: avatarImg,
-        })
-        setMessage({
-          type: 'success',
-          text: `Welcome, ${params.name}! 😊 Now go check your email. `,
-        })
-        return res
+      const res = await register(params)     
+      setLoading(false)
+      if (res.error) {
+        setMessage({ type: 'error', text: res.message })
+        return res.error
       }
+      setUser({
+        name: params.name,
+        email: params.email,
+        avatar: params.avatar,
+      })
+      setMessage({
+        type: 'success',
+        text: `Welcome, ${params.name}! 😊 Now go check your email. `,
+      })
+      return res
     } catch (err) {
-      console.log('signup error: ', err.response)
+      console.log('signup error: ', err)
       setMessage({ type: 'error', text: `Something went wrong. 😟 ` })
       return err
     }
@@ -122,7 +102,7 @@ export const AuthContext = (props) => {
         id: res.id,
         name: res.name,
         email: res.email,
-        avatar: avatarImg,
+        avatar: res.avatar,
       })
       setLoggedIn(true)
       !message &&
@@ -138,6 +118,7 @@ export const AuthContext = (props) => {
   }
 
   const handleEdit = async (params) => {
+    console.log('edit user params', params)
     try {
       setLoading(true)
       const res = await editUser(params)
@@ -147,6 +128,7 @@ export const AuthContext = (props) => {
       setUser({
         ...user,
         name: params.name,
+        avatar: params.avatar,
       })
       return res
     } catch (err) {
@@ -196,7 +178,7 @@ export const AuthContext = (props) => {
       setLoading(false)
       return res
     } catch (err) {
-      setMessage({ type: 'error', text: `Something went wrong. 😟 ` })
+      setMessage({ type: 'error', text: ` 😟 ${err.response.data.message} ` })
       setLoading(false)
       return err
     }

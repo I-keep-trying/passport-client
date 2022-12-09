@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { isMobile } from 'react-device-detect'
 import {
   Box,
   VStack,
@@ -21,21 +22,20 @@ import {
 import { InfoIcon } from '@chakra-ui/icons'
 import zxcvbn from 'zxcvbn'
 import { authContext } from '../context/auth-context'
+import debounce from '../services/debounce'
 
 export const ForgotPw = () => {
   const ctx = useContext(authContext)
-  const defaultEmail = ctx.user?.email ? ctx.user.email : ''
-  const [email, setEmail] = useState(defaultEmail)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [show, setShow] = useState(false)
+  const [nickname, setNickname] = useState('')
 
   const navigate = useNavigate()
 
   const handlePwInputChange = (e) => setPassword(e.target.value)
-  const handleEmailInputChange = (e) => {
-    setEmail(e.target.value)
-    ctx.setUser({ ...ctx.user, email: e.target.value })
-  }
+  const handleEmailInputChange = (e) => setEmail(e.target.value)
+  const handleHiddenInputChange = (e) => setNickname(e.target.value)
 
   const createPasswordLabel = (result) => {
     switch (result.score) {
@@ -89,14 +89,20 @@ export const ForgotPw = () => {
       })
       setPassword('')
     } else {
-      ctx.handleForgot({
-        email,
-        password,
-        event: 'forgot',
-      })
-      ctx.message.type === 'success' && navigate('/login')
+      nickname === '' &&
+        debounce(
+          ctx.handleForgot({
+            email,
+            password,
+            event: 'forgot',
+          })
+        )
     }
   }
+
+  useEffect(() => {
+    ctx.message?.type === 'success' && navigate('/login')
+  }, [ctx.message])
 
   const handleClick = () => setShow(!show)
 
@@ -124,21 +130,19 @@ export const ForgotPw = () => {
               <FormControl isRequired>
                 <FormLabel mt="4">
                   New Password
-                  <Tooltip
-                    label={
-                      <>
-                        <Text fontSize="xs">
-                          Passwords must be no less than 8,
-                        </Text>
-                        <Text fontSize="xs">
-                          and no more than 64 characters
-                        </Text>
-                      </>
-                    }
-                    fontSize="md"
-                  >
-                    <InfoIcon ml="4px" />
-                  </Tooltip>
+                  {!isMobile && (
+                    <Tooltip
+                      label={
+                        <>
+                          <Text fontSize="xs">Passwords must at least 8,</Text>
+                          <Text fontSize="xs">and less than 64 characters</Text>
+                        </>
+                      }
+                      fontSize="md"
+                    >
+                      <InfoIcon ml="4px" />
+                    </Tooltip>
+                  )}
                 </FormLabel>
                 <InputGroup size="md">
                   <Input
@@ -157,7 +161,7 @@ export const ForgotPw = () => {
                 <Progress value={pwBar.value} colorScheme={pwBar.color} />
 
                 <Box>
-                  {password.length > 0 ? (
+                  {password.length > 0 && (
                     <>
                       {createPasswordLabel(testedResult)}
                       {testedResult.feedback.suggestions.map(
@@ -172,10 +176,10 @@ export const ForgotPw = () => {
                         )
                       )}
                     </>
-                  ) : (
+                  )}
+                  {isMobile && (
                     <FormHelperText>
-                      Password must be at least 8 characters, but no more than
-                      64.
+                      Use at least 8 characters, but less than 64.
                     </FormHelperText>
                   )}
                 </Box>
@@ -184,6 +188,12 @@ export const ForgotPw = () => {
                 <Button type="submit">Save</Button>
                 <Button onClick={cancel}>Cancel</Button>
               </ButtonGroup>
+              <Input
+                name="nickname"
+                value={nickname}
+                style={{ visibility: 'hidden' }}
+                onChange={handleHiddenInputChange}
+              />
             </form>
           </VStack>
         </Grid>

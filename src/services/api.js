@@ -60,6 +60,7 @@ export const resetPw = async (params) => {
 }
 
 export const editUser = async (params) => {
+//  console.log('editUser params',params)
   try {
     const res = await axios.post(`${url}/edit`, params)
     return res.data

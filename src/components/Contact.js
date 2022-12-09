@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react'
 import { EmailIcon } from '@chakra-ui/icons'
 import { authContext } from '../context/auth-context'
+import debounce from '../services/debounce'
 
 export const Contact = () => {
   const ctx = useContext(authContext)
@@ -22,16 +23,18 @@ export const Contact = () => {
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState(userEmail ? userEmail : '')
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('Message from contact form')
+  const [nickname, setNickname] = useState('')
 
   const handleNameInputChange = (e) => setName(e.target.value)
-  const handleEmailInputChange = (e) =>
-    !ctx.isLoggedIn && setEmail(e.target.value)
+  const handleEmailInputChange = (e) => setEmail(e.target.value)
   const handleMessage = (e) => setMessage(e.target.value)
+  const handleHiddenInputChange = (e) => setNickname(e.target.value)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    ctx.handleContactForm({ name: name, email: email, message: message })
+    nickname === '' &&
+      debounce(ctx.handleContactForm({ name: name, email: email, message: message }))
     setName('')
     setEmail('')
     setMessage('')
@@ -82,6 +85,12 @@ export const Contact = () => {
               Limit: {JSON.stringify(5000 - message.length)}
             </FormHelperText>
           </FormControl>
+          <Input
+            name="nickname"
+            value={nickname}
+            style={{ visibility: 'hidden' }}
+            onChange={handleHiddenInputChange}
+          />
           <ButtonGroup mt={4} spacing={8}>
             <Button type="submit">
               Send <EmailIcon ml="3" />{' '}

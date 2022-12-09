@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { authContext } from '../context/auth-context'
 import { isMobile } from 'react-device-detect'
-import { Card11052022 } from './cards/Card11052022'
+import { Card11052022, Card11102022 } from './cards'
 
 export const Home = () => {
   const ctx = useContext(authContext)
@@ -25,9 +25,7 @@ export const Home = () => {
     <HStack mt="100">
       <SimpleGrid columns={isMobile ? 1 : 2} spacing={10}>
         <Card11052022 />
-        <Card11052022 />
-        <Card11052022 />
-        <Card11052022 />
+        <Card11102022 />
       </SimpleGrid>
     </HStack>
   )

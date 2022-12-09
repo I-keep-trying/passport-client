@@ -13,6 +13,7 @@ import { authContext } from '../context/auth-context'
 
 export const Account = () => {
   const ctx = useContext(authContext)
+  console.log('ctx.user',ctx.user)
   const navigate = useNavigate()
   const handleEdit = () => {
     navigate('/edit')
@@ -30,7 +31,7 @@ export const Account = () => {
               </Center>
             </Box>
           </Center>
-          <Avatar name="" size="lg" src={ctx.avatar} />
+          <Avatar name="" size="lg" src={ctx.user.avatar} />
           <Text>Name: {ctx.user.name}</Text>
           <Text>Email: {ctx.user.email} </Text>
         </Stack>

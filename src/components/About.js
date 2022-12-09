@@ -5,8 +5,6 @@ import { Text, Heading, Stack } from '@chakra-ui/react'
 export const About = () => {
   return (
     <>
-      <div>
-      </div>
       <Stack spacing={4}>
         <Heading>About Me</Heading>
         <Text>NOVEMBER 5, 2022</Text>

@@ -25,6 +25,7 @@ import {
 } from '@chakra-ui/react'
 import { InfoIcon } from '@chakra-ui/icons'
 import zxcvbn from 'zxcvbn'
+import debounce from '../services/debounce'
 
 import { authContext } from '../context/auth-context'
 
@@ -33,6 +34,7 @@ export const ChangePw = () => {
   const [password, setPassword] = useState('')
   const [showOld, setShowOld] = useState(false)
   const [show, setShow] = useState(false)
+  const [nickname, setNickname] = useState('')
 
   const ctx = useContext(authContext)
 
@@ -57,6 +59,8 @@ export const ChangePw = () => {
   const handlePwInputChange = (e) => {
     setPassword(e.target.value)
   }
+
+  const handleHiddenInputChange = (e) => setNickname(e.target.value)
 
   const createPasswordLabel = (result) => {
     switch (result.score) {
@@ -96,7 +100,7 @@ export const ChangePw = () => {
 
   const pwBar = createPasswordBar(testedResult)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (password.length < 8) {
       ctx.setMessage({
@@ -114,22 +118,18 @@ export const ChangePw = () => {
         text: 'New password is too similar. ',
       })
     } else {
-      ctx.handleReset({
+      const res = await ctx.handleReset({
         oldPassword,
         password,
         email: ctx.user.email,
       })
-      ctx.setMessage({
-        type: 'success',
-        text: 'Password changed!',
-      })
+      nickname === '' && debounce(res)
 
-      navigate('/login')
+      if (res.success) {
+        ctx.handleLogout()
+        navigate('/login')
+      }
     }
-  }
-
-  const handleLogin = () => {
-    navigate('/login')
   }
 
   return (
@@ -176,7 +176,8 @@ export const ChangePw = () => {
 
                       <PopoverBody>
                         <Text fontSize="xs">
-                          Passwords must be no less than 8, and no more than 64 characters
+                          Passwords must be no less than 8, and no more than 64
+                          characters
                         </Text>
                       </PopoverBody>
                     </PopoverContent>
@@ -227,14 +228,15 @@ export const ChangePw = () => {
               </Box>
               <ButtonGroup mt={4} spacing={8}>
                 <Button type="submit">Save</Button>
-                <Button onClick={handleCancel}>Cancel</Button>
-                {ctx.message?.type === 'success' ? (
-                  <Button onClick={handleLogin}>Login</Button>
-                ) : (
-                  <Button isDisabled>Login</Button>
-                )}
+                <Button onClick={handleCancel}>Cancel</Button>              
               </ButtonGroup>
             </FormControl>
+            <Input
+              name="nickname"
+              value={nickname}
+              style={{ visibility: 'hidden' }}
+              onChange={handleHiddenInputChange}
+            />
           </form>
         </Stack>
       </Container>

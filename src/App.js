@@ -24,6 +24,8 @@ import {
   Layout,
   TermsPrivacy,
   Code,
+  Post1,
+  Post2,
 } from './components'
 import { authContext } from './context/auth-context'
 import { useDisclosure, Center } from '@chakra-ui/react'
@@ -42,12 +44,12 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   const ctx = useContext(authContext)
 
-  /*   const { onOpen } = useDisclosure()
+  const { onOpen } = useDisclosure()
 
   useEffect(() => {
     onOpen()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) */
+  }, [])
 
   return ctx.loading ? (
     <>
@@ -66,6 +68,8 @@ function App() {
             <Route path="home" element={<Home />} />
             <Route path="contact" element={<Contact />} />
             <Route path="about" element={<About />} />
+            <Route path="post1" element={<Post1 />} />
+            <Route path="post2" element={<Post2 />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="terms" element={<TermsPrivacy />} />

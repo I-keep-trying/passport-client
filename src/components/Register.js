@@ -20,19 +20,21 @@ import {
 import zxcvbn from 'zxcvbn'
 import { authContext } from '../context/auth-context'
 import data from '../data/myJson'
-import Select from 'react-select'
+import debounce from '../services/debounce'
+
 //TODO: provide 'resend activation email' option
 export const Register = () => {
-  const [name, setName] = useState('')
+  const [name, setName] = useState('a')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [show, setShow] = useState(false)
   const [domain, setDomain] = useState(null)
+  const [nickname, setNickname] = useState('')
 
   const ctx = useContext(authContext)
 
   const navigate = useNavigate()
-
+  console.log('navigate', navigate)
   const handleNameInputChange = (e) => setName(e.target.value)
   const handleEmailInputChange = (e) => {
     setEmail(e.target.value)
@@ -44,21 +46,19 @@ export const Register = () => {
       const found2 = found[0].substring(1)
       const emailPre = e.target.value.match(regex2)
       //   console.log('found', found)
-      console.log('found2', found2)
-      console.log('emailPre', emailPre)
+      // console.log('found2', found2)
+      //  console.log('emailPre', emailPre)
       setDomain(found2)
       setEmail(`${emailPre}${found2}`)
     }
   }
-  /*   useEffect(() => {
-const domains = data.filter(item => item.includes(domain))
-  },[domain]) */
-  console.log('email: ', email)
-  console.log('domain: ', domain)
+
   const foundDomain = data.filter((item) => item.startsWith(domain))
-  console.log('foundDomain', foundDomain)
+  // console.log('foundDomain', foundDomain)
 
   const handlePwInputChange = (e) => setPassword(e.target.value)
+
+  const handleHiddenInputChange = (e) => setNickname(e.target.value)
 
   const createPasswordLabel = (result) => {
     switch (result.score) {
@@ -112,25 +112,27 @@ const domains = data.filter(item => item.includes(domain))
       })
       setPassword('')
     } else {
-      const reg = await ctx.handleRegister({
-        name: name,
-        email: email,
-        password,
-        event: 'register',
-      })
+      const reg = await debounce(
+        ctx.handleRegister({
+          name: name,
+          email: email,
+          password,
+          event: 'register',
+          avatar: '',
+        })
+      )
+      console.log('reg response', reg)
       return reg
     }
   }
 
+  useEffect(() => {
+    ctx.message?.type === 'success' && navigate('/login')
+  }, [ctx.message])
+
   const handleClick = () => setShow(!show)
 
   const cancel = () => navigate(-1)
-
-  const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-  ]
 
   return (
     <Flex width="Full" align="center" justifyContent="center">
@@ -164,7 +166,7 @@ const domains = data.filter(item => item.includes(domain))
                   onChange={handleEmailInputChange}
                   placeholder="you@email.com"
                 />
-              {/*   <Select options={options} /> */}
+                {/*   <Select options={options} /> */}
                 <FormHelperText>We'll never share your email.</FormHelperText>
               </FormControl>
               <FormControl isRequired>
@@ -213,6 +215,12 @@ const domains = data.filter(item => item.includes(domain))
                 <Button type="submit">Create Account</Button>
                 <Button onClick={cancel}>Cancel</Button>
               </ButtonGroup>
+              <Input
+                name="nickname"
+                value={nickname}
+                style={{ visibility: 'hidden' }}
+                onChange={handleHiddenInputChange}
+              />
             </form>
           </VStack>
         </Grid>

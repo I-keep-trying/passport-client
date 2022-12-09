@@ -26,9 +26,13 @@ code {
   position: fixed;
   bottom: 0;
   width: 100%;
-  padding: .5em 1em;
+  padding: 0.5em 1em;
 }
 
 #link {
   text-decoration-line: underline;
+}
+
+#link-overlay {
+  cursor: pointer;
 }

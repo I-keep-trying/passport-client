@@ -18,17 +18,21 @@ import {
   Heading,
 } from '@chakra-ui/react'
 import { authContext } from '../context/auth-context'
+import debounce from '../services/debounce'
 
 export const Login = () => {
   const ctx = useContext(authContext)
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('drecrego@gmail.com')
+  const [password, setPassword] = useState('password')
   const [show, setShow] = useState(false)
+  const [nickname, setNickname] = useState('')
 
   const navigate = useNavigate()
 
   const emailInput = useRef()
+
+  const nicknameValue = useRef(null)
 
   const handleEmailInputChange = (e) => {
     setEmail(e.target.value)
@@ -37,6 +41,8 @@ export const Login = () => {
   const handlePwInputChange = (e) => {
     setPassword(e.target.value)
   }
+
+  const handleHiddenInputChange = (e) => setNickname(e.target.value)
 
   useEffect(() => {
     ctx.loginPage()
@@ -58,11 +64,14 @@ export const Login = () => {
     if (!email || !password) {
       ctx.setMessage({ type: 'error', text: 'Please fill all form fields.' })
     }
-    await ctx.handleLogin({
-      email,
-      password,
-      userData: ctx.userData,
-    })
+    nickname === '' &&
+      (await debounce(
+        ctx.handleLogin({
+          email,
+          password,
+          userData: ctx.userData,
+        })
+      ))
   }
 
   const handleClick = () => setShow(!show)
@@ -75,7 +84,10 @@ export const Login = () => {
         <Grid minH="100vh" p={3}>
           <VStack spacing={8}>
             <Heading> Login </Heading>
-            <form onSubmit={login}>
+            <form
+              onSubmit={login}
+              // onSubmit={debounce(login)}
+            >
               <FormControl isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
@@ -119,6 +131,12 @@ export const Login = () => {
                 <Button type="submit">Login</Button>
                 <Button onClick={cancel}>Cancel</Button>
               </ButtonGroup>
+              <Input
+                ref={nicknameValue}
+                name="nickname"
+                style={{ visibility: 'hidden' }}
+                 onChange={handleHiddenInputChange}
+              />
             </form>
           </VStack>
         </Grid>
