@@ -10,7 +10,7 @@ export const ping = () => {
 }
 
 export const getLogin = () => {
-  const request = axios.get(`${url}/login`)
+  const request = axios.get(`/login`)
   return request.then((response) => response.data)
 }
 
