@@ -27,7 +27,7 @@ app.use(
 app.disable('x-powered-by')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-const publicPath = path.join(__dirname, '..', "build") //publicPath OK! C:\Users\Owner\webdev\JWT-AUTH\client\build
+const publicPath = path.join(__dirname, '..', 'build') //publicPath OK! C:\Users\Owner\webdev\JWT-AUTH\client\build
 
 //app.use(express.static(path.join(__dirname, 'build')))
 app.use(express.static(publicPath))
@@ -105,12 +105,12 @@ app.use(passport.session())
 const router = require('./routes/router')
 app.use('/api', router)
 
-const initPath = path.join(__dirname, 'build', 'index.html')
-console.log('initPath',initPath)
+const initPath = path.join(__dirname, '..', 'build', 'index.html')
+console.log('initPath', initPath)
 
-/* app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'))
-}) */
+app.get('/*', function (req, res) {
+  res.sendFile(initPath)
+})
 
 app.use((req, res, next) => {
   res.status(404).send('Sorry! 😢')
